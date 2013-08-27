@@ -38,7 +38,7 @@
     xsi:noNamespaceSchemaLocation='PackageSchema.xsd'>
     <name>IntelliJustice.jar</name>
     <link>http://onlineathletics.github.com/packages/IntelliJustice.zip</link>
-    <version>000001</version>
+    <version>000000</version>
     <stage>ALPHA</stage>
-    <checksum>A8F92C213B7606418D902BA72AE59752C8210F4A015FB4E3A7B6CD4F5FF87DA7331CA71C19755484CD3BB63E59E645C5D452CB5455CF59ADF14EBD0B81ED6403</checksum>
+    <checksum>DFB9003F73DF048801828AE1CB566F3DF6AA07741501A810CF6856B223AF829B125B78D8BE1D67D96A2501E451F54D638E2690C7CD20F5053FD51694F7A01BC1</checksum>
 </package>
