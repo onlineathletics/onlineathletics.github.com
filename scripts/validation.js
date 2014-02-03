@@ -40,6 +40,8 @@ var CONTACT_MESSAGE_MAX_LENGTH = 4096;
 
 var MESSAGE_MIN_OFFSET = 200;
 
+var EMAIL_REGULAR_EXPRESSION = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 /* the element top offest used in scroll animation */
 //var FOCUS_OFFSET = 24;
 
@@ -59,7 +61,7 @@ var VALIDATION_POPOVER_OPTIONS = {
  * Validates contacts form and returns true if form data is correct, and false
  * otherwise.
  * 
- * @returns {Boolean} the validation status.
+ * @return {Boolean} the validation status.
  */
 function validateContactForm() {
     var $nameField    = $('#contactForm\\:contactInputName');
@@ -71,10 +73,6 @@ function validateContactForm() {
     status     &= validateEmail($emailField);
     status     &= validateText($textArea, CONTACT_MESSAGE_MAX_LENGTH);
     status     =  Boolean(status);
-    
-    /* $('html, body').animate({
-        scrollTop: $($group).offset().top - FOCUS_OFFSET
-    }); */
     
     $submitButton.parent().toggleClass('disabled', status);
 
@@ -88,29 +86,16 @@ function validateContactForm() {
  * @param {Element} field   the input text field.
  * @param {Number}  length  the maximumlength of the text vfield alue.
  * 
- * @returns {Boolean}       true if text field value is valid, false otherwise.
+ * @return {Boolean}        true if text field value is valid, false otherwise.
  */
 function validateText(field, length) {
     var $field = $(field);
-    var $group = $field.parent();
-    var $msgs  = $group.prev();
-    
-    var value  = $field.val();
-    var status = ((value === '') || (value.length > length));
+    var $group = $field.parent();     
     var style  = ($field.prop('tagName').toUpperCase() === 'INPUT' 
-        ? ' input-group' : '');
-            
-    /* toggle style only for input element */
-    $group.toggleClass(style + ' has-error', status);
-    
-    var $popover = $msgs.children('.validation-message-missing');
-    
-    if ($popover.length) {
-        $popover.popover(VALIDATION_POPOVER_OPTIONS);
-        $popover.popover(status ? 'show' : 'hide');
-    }
-    
-    return !status;
+        ? 'input-group has-error' : 'has-error');
+
+    return !(stringIsEmpty($field, $group, style, getMessage($group, '.validation-missing'))
+          || stringIsOverlong($field, $group, length, style, getMessage($group, '.validation-overlong')));
 }
 
 /**
@@ -119,24 +104,106 @@ function validateText(field, length) {
  * 
  * @param {Element} field the input text field.
  * 
- * @returns {Boolean}     true if text field value is valid, false otherwise.
+ * @return {Boolean}      true if text field value is valid, false otherwise.
  */
 function validateEmail(field) {
     var $field = $(field);
     var $group = $field.parent();
-    var $msgs  = $group.prev();
+    var  style = 'input-group has-error';
     
-    var value  = $field.val();
-    var status = (value === '');
+    return !(stringIsEmpty($field, $group, style, getMessage($group, '.validation-missing'))
+          || !isValidEmail($field, $group, style, getMessage($group, '.validation-invalid'))
+          || stringIsOverlong($field, $group, CONTACT_EMAIL_MAX_LENGTH, style, 
+                             getMessage($group, '.validation-overlong')));
+}
+
+/**
+ * Validates specified input field and returns true if input value is empty.
+ * 
+ * @param {Element} $field  the input field to validate.
+ * @param {Element} $group  the form group where input field from.
+ * @param {String}  style   the error style for the form group.
+ * @param {String}  message the error message.
+ * 
+ * @return {Boolean}        true if value is empty and false otherwise.
+ */
+function stringIsEmpty($field, $group, style, message) {
+    var status = ($field.val() === '');
     
-    $group.toggleClass('input-group has-error', status);
+    togglePopover($group, style, message, status);
     
-    var $popover = $msgs.children('.validation-message-missing');
+    return status;
+}
+
+/**
+ * Validates specified input field and returns true if input value string is
+ * longer than specified length.
+ * 
+ * @param {Element} $field  the input field to validate.
+ * @param {Element} $group  the form group where input field from.
+ * @param {Number}  length  the maximum allowed length.
+ * @param {String}  style   the error style for the form group.
+ * @param {String}  message the error message.
+ * 
+ * @return {Boolean}        true if value is longer than specified length, 
+ *                          and false otherwise.
+ */
+function stringIsOverlong($field, $group, length, style, message) {
+    var status = ($field.val().length > length);
     
-    if ($popover.length) {
-        $popover.popover(VALIDATION_POPOVER_OPTIONS);
-        $popover.popover(status ? 'show' : 'hide');
-    }
+    togglePopover($group, style, message, status);
     
-    return !status;
+    return status;
+}
+
+/**
+ * Validates specified input field and returns true if input value string is
+ * valid email address.
+ * 
+ * @param {Element} $field  the input field to validate.
+ * @param {Element} $group  the form group where input field from.
+ * @param {String}  style   the error style for the form group.
+ * @param {String}  message the error message.
+ * 
+ * @return {Boolean}        true if value is valid email address, 
+ *                          and false otherwise.
+ */
+function isValidEmail($field, $group, style, message) {
+    var status = EMAIL_REGULAR_EXPRESSION.test($field.val());
+    
+    togglePopover($group, style, message, !status);
+    
+    return status;
+}
+
+/**
+ * Returns the message for a specific selector inside a form validation  group.
+ * 
+ * @param {Element} $groupd  the form group.
+ * @param {String}  selector the CSS selector of the message.
+ * 
+ * @return {String}          the message text.
+ */
+function getMessage($groupd, selector) {
+    return $groupd.children(selector).text();
+}
+
+/**
+ * Toggles popover for a specific validation function. Shows popover and changes
+ * form group style to error when status is true, and returns normal style, 
+ * as well as, hides popover otherwise.
+ * 
+ * @param {Element} $group  the form group where input field from.
+ * @param {String}  style   the error style for the form group.
+ * @param {String}  message the error message.
+ * @param {Boolean} status  the validation status.
+ */
+function togglePopover($group, style, message, status) {
+    var options  = VALIDATION_POPOVER_OPTIONS;
+        options.content = message;
+    var $popover    = $group.popover().popover('destroy');
+        $popover    = $group.popover(options);
+    
+    $group.toggleClass(style, status);    
+    $popover.popover(status ? 'show' : 'hide');
 }
