@@ -1,0 +1,45 @@
+// avoid page jamping when right scroll bar appears
+html {
+    overflow-y: scroll;
+}
+
+// free space between page top and content
+.navbar-region {
+    height: 80px;
+}
+
+footer {
+    color: #6e6e6e;
+    font-size: @font-size-smaller;
+    
+    -webkit-font-smoothing: antialiased;
+    
+    > .footer-divider {
+        clear:      both;
+        width:      100%;
+        border-top: 1px solid #ddd;
+    }
+    
+    .piped-links {
+        padding-left: 0px;
+        
+        > p {
+            float:         left;
+            padding-right: 10px;
+        }
+        
+        > li {
+            float:        none;
+            display:      inline-block;
+            margin-left:  .3em;
+            padding-left: .6em;
+            border-left:  1px solid #ccc;
+        }
+        
+        > li.first {
+            margin-left:  0;
+            padding-left: 0;
+            border-left:  none;
+        }
+    }
+}
