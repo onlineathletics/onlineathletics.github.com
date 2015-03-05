@@ -5794,6 +5794,32 @@ footer .piped-links-long {
 .invisible-group {
   display: none;
 }
+.table-of-contents {
+  padding-left: 0;
+}
+.table-of-contents li {
+  list-style-type: none;
+  line-height: 2.4em;
+  border: 1px solid rgba(0, 136, 204, 0.1);
+  border-width: 0;
+}
+@media (min-width: 768px) {
+  .table-of-contents li {
+    border-width: 0 0 1px 0;
+  }
+}
+.table-of-contents li small {
+  display: none;
+  float: right;
+}
+@media (min-width: 768px) {
+  .table-of-contents li small {
+    display: block;
+  }
+}
+.marathon-results > tbody > .accordion-toggle > .text-right > span {
+  cursor: pointer;
+}
 .curriculum-vitae {
   margin-left: -15px;
 }

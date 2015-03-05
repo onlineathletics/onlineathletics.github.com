@@ -1,6 +1,6 @@
 .table-of-contents {
     padding-left: 0;
-    
+
     li {
         list-style-type: none;
 
@@ -15,9 +15,21 @@
         small {
             display: none;
             float:   right;
-            
+
             @media (min-width: @grid-float-breakpoint) {
                 display: block;
+            }
+        }
+    }
+}
+
+.marathon-results {
+    > tbody {
+        > .accordion-toggle {
+            > .text-right {
+                > span {
+                    cursor: pointer;
+                }
             }
         }
     }
