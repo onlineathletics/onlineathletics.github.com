@@ -101,7 +101,7 @@ object Compile {
 
         var _index   = 0
         var _layout  = layout
-        var _title   = "<title>Andrey Pudov</title>"
+        var _title   = "<title>Online Athletics</title>"
         var _styles  = ""
         var _header  = header
         var _content = content
